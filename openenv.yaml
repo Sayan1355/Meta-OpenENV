@@ -1,0 +1,49 @@
+# OpenEnv Configuration — v2
+# Smart Hospital Resource Management Environment
+
+environment:
+  entrypoint: env/hospital_env.py
+  class: HospitalEnv
+  models: env/models.py
+  description: >
+    A production-quality reinforcement learning environment that simulates
+    hospital resource management with typed Pydantic models, emergency
+    patient handling, structured assign actions, and improved reward shaping.
+
+tasks:
+  easy:
+    description: Treat as many patients as possible (percentage of all patients seen).
+    grader: graders/grader.py::grade_easy
+    metric: treated_percentage
+    passing_score: 0.6
+
+  medium:
+    description: Maximise treatment rate while handling emergencies promptly.
+    grader: graders/grader.py::grade_medium
+    metric: treated_minus_emergency_penalty
+    passing_score: 0.5
+
+  hard:
+    description: >
+      Composite score: treatment efficiency (40%), minimised wait time (30%),
+      and emergency handling quality (30%).
+    grader: graders/grader.py::grade_hard
+    metric: composite_efficiency
+    passing_score: 0.4
+
+graders:
+  grade_easy:
+    file: graders/grader.py
+    function: grade_easy
+  grade_medium:
+    file: graders/grader.py
+    function: grade_medium
+  grade_hard:
+    file: graders/grader.py
+    function: grade_hard
+
+baseline:
+  entrypoint: run.py
+  description: >
+    Smart greedy agent that prioritises emergency patients first,
+    then highest severity, assigning to the first available doctor.
